@@ -56,3 +56,12 @@ def actualizar_tarea(id: int, tarea_actualizada: dict):
             tareas[index].update(tarea_actualizada)
             return tareas[index]
     raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+# Endpoint: Eliminar una tarea
+@app.delete('/tarea/{id}', tags=['Operaciones CRUD'])
+def Eliminar(id: int):
+    for index, tarea in enumerate(tareas):
+        if tarea["id"] == id:
+            del tareas[index]
+            return {"mensaje": "Usuario eliminado correctamente"}
+    raise HTTPException(status_code=404, detail="Usuario no encontrado")
