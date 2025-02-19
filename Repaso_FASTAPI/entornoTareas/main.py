@@ -34,7 +34,7 @@ def obtener_tarea(id: int):
             return tarea
     raise HTTPException(status_code=404, detail="Tarea no encontrada")
 
-# Endpoint: Crear una nueva tarea.
+# Endpoint: Crear una nueva tarea
 @app.post('/tarea/', tags=['Operaciones CRUD'])
 def crear_tarea(tarea_nueva: dict):
     for tarea in tareas:
@@ -43,3 +43,16 @@ def crear_tarea(tarea_nueva: dict):
     
     tareas.append(tarea_nueva)
     return tarea_nueva 
+
+"""
+{"id":4, "titulo":"Examen 2do Parcial", "descripcion":"Resolver el examen en Google Forms", "vencimiento":"16-03-24", "estado":"no completada"}
+"""
+
+# Endpoint: Actualizar una tarea existente
+@app.put('/tarea/{id}', tags=['Operaciones CRUD'])
+def actualizar_tarea(id: int, tarea_actualizada: dict):
+    for index, tarea in enumerate(tareas):
+        if tarea["id"] == id:
+            tareas[index].update(tarea_actualizada)
+            return tareas[index]
+    raise HTTPException(status_code=404, detail="Usuario no encontrado")
