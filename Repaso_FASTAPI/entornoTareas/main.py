@@ -33,3 +33,13 @@ def obtener_tarea(id: int):
         if tarea["id"] == id:
             return tarea
     raise HTTPException(status_code=404, detail="Tarea no encontrada")
+
+# Endpoint: Crear una nueva tarea.
+@app.post('/tarea/', tags=['Operaciones CRUD'])
+def crear_tarea(tarea_nueva: dict):
+    for tarea in tareas:
+        if tarea["id"] == tarea_nueva.get("id"):
+            raise HTTPException(status_code=400, detail="El id ya esta registrado")
+    
+    tareas.append(tarea_nueva)
+    return tarea_nueva 
