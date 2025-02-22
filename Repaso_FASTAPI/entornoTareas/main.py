@@ -10,11 +10,17 @@ app = FastAPI(
 
 tareas = [
     {"id":1, "titulo":"Practica 1", "descripcion":"Conocer que es FASTAPI y preparar el entrono para el trabajo con el framework", 
-        "vencimiento":"14-02-24", "estado":"completada"},
+        "vencimiento":"14-02-25", "estado":"completada"},
     {"id":2, "titulo":"Practica 2", "descripcion":"Conocer y trabajar con los Verbos y respuestas HTTP", 
-        "vencimiento":"15-02-24", "estado":"no completada"},
+        "vencimiento":"15-02-25", "estado":"completada"},
     {"id":3, "titulo":"Examen 1er Parcial", "descripcion":"Resolver el examen en Google Forms",
-        "vencimiento":"16-02-24", "estado":"no completada"}
+        "vencimiento":"16-02-25", "estado":"no completada"},
+    {"id":4, "titulo":"Practica 3", "descripcion":"Conocer que es FASTAPI y preparar el entrono para el trabajo con el framework", 
+        "vencimiento":"14-02-25", "estado":"no completada"},
+    {"id":5, "titulo":"Practica 4", "descripcion":"Conocer y trabajar con los Verbos y respuestas HTTP", 
+        "vencimiento":"15-02-25", "estado":"no completada"},
+    {"id":6, "titulo":"Examen 2do Parcial", "descripcion":"Resolver el examen en Google Forms",
+        "vencimiento":"16-02-25", "estado":"no completada"}
 ]
 
 @app.get('/', tags=['Inicio'])
@@ -45,7 +51,7 @@ def crear_tarea(tarea_nueva: dict):
     return tarea_nueva 
 
 """
-{"id":4, "titulo":"Examen 2do Parcial", "descripcion":"Resolver el examen en Google Forms", "vencimiento":"16-03-24", "estado":"no completada"}
+{"id":7, "titulo":"Examen 3er Parcial", "descripcion":"Resolver el examen en Google Forms", "vencimiento":"16-03-24", "estado":"no completada"}
 """
 
 # Endpoint: Actualizar una tarea existente
