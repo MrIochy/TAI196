@@ -1,6 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
+from tokenGen import createToken
 from typing import Optional, List
-from modelsPydantic import modelUsuario
+from modelsPydantic import modelUsuario, modelAuth
+from fastapi.responses import JSONResponse
+from middlewares import BaererJWT
 
 app= FastAPI(
     title='Mi primer API 196',
@@ -19,8 +22,17 @@ usuarios=[
 def main():
     return {'hola FastAPI': 'LuisAntonioMontoya'}
 
+@app.post('/auth', tags=['Autentificacion'])
+def login(autorizado:modelAuth):
+    if autorizado.correo == "123@example.com" and autorizado.passw == "123456789":
+        token:str = createToken(autorizado.model_dump())
+        print(token)
+        return JSONResponse(content=token)
+    else:
+        return{"Aviso": "Usario no Autorizado"}
+
 #endpoint Consultar todos
-@app.get('/usuarios', response_model=List[modelUsuario], tags=['Operaciones CRUD'])
+@app.get('/usuarios', dependencies=[Depends(BaererJWT())], response_model=List[modelUsuario], tags=['Operaciones CRUD'])
 def ConsultarTodos():
     return usuarios
 
