@@ -4,12 +4,17 @@ from typing import Optional, List
 from modelsPydantic import modelUsuario, modelAuth
 from fastapi.responses import JSONResponse
 from middlewares import BaererJWT
+from DB.conexion import Session, engine, Base
+from models.modelsDB import User
 
 app= FastAPI(
     title='Mi primer API 196',
     description='Luis Antonio Montoya Magdaleno',
     version='1.0.1'
 )
+
+#levanta las tablas definidas en modelos
+Base.metadata.create_all(bind=engine)
 
 usuarios=[
     {"id":1, "nombre":"luis", "edad":22, "correo":"luis@example.com"},
@@ -39,12 +44,17 @@ def ConsultarTodos():
 #endpoint Para agregar usuarios
 @app.post('/usuario/', response_model=modelUsuario, tags=['Operaciones CRUD'])
 def AgregarUsuario(usuarionuevo: modelUsuario):
-    for usr in usuarios:
-        if usr["id"] == usuarionuevo.id:
-            raise HTTPException(status_code=400, detail="El id ya esta registrado")
+    db= Session()
+    try:
+        db.add(User(**usuarionuevo.model_dump()))
+        db.commit()
+        return JSONResponse(status_code=201, content={"mensaje": "Usuario Guardado", "usuario": usuarionuevo.model_dump()})
+    except:
+        db.rollback()
+        return JSONResponse(status_code=599, content={"mensaje": "No se Guardo" , "Excepcion": str(e)})
+    finally:
+        db.close()
     
-    usuarios.append(usuarionuevo)
-    return usuarionuevo 
 
 #endpoint Para modificar usuarios
 @app.put('/usuario/{id}', response_model=modelUsuario, tags=['Operaciones CRUD'])
