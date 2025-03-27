@@ -3,6 +3,7 @@ from tokenGen import createToken
 from typing import Optional, List
 from modelsPydantic import modelUsuario, modelAuth
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from middlewares import BaererJWT
 from DB.conexion import Session, engine, Base
 from models.modelsDB import User
@@ -15,13 +16,6 @@ app= FastAPI(
 
 #levanta las tablas definidas en modelos
 Base.metadata.create_all(bind=engine)
-
-usuarios=[
-    {"id":1, "nombre":"luis", "edad":22, "correo":"luis@example.com"},
-    {"id":2, "nombre":"antonio", "edad":21, "correo":"antonio@example.com"},
-    {"id":3, "nombre":"iochy", "edad":23, "correo":"iochy@example.com"},
-    {"id":4, "nombre":"lucy", "edad":18, "correo":"lucy@example.com"},
-]
 
 @app.get('/', tags=['Inicio'])
 def main():
@@ -36,10 +30,34 @@ def login(autorizado:modelAuth):
     else:
         return{"Aviso": "Usario no Autorizado"}
 
+#dependencies=[Depends(BaererJWT())] se encarga de verificar si el token es valido
+
 #endpoint Consultar todos
-@app.get('/usuarios', dependencies=[Depends(BaererJWT())], response_model=List[modelUsuario], tags=['Operaciones CRUD'])
+@app.get('/usuarios', tags=['Operaciones CRUD'])
 def ConsultarTodos():
-    return usuarios
+    db= Session()
+    try:
+        consulta= db.query(User).all()
+        return JSONResponse(content=jsonable_encoder(consulta))
+    except Excepcion as x:
+        return JSONResponse(status_code=500, content={"mensaje": "No fue posible conectar" , "Excepcion": str(x)})
+    finally:
+        db.close()
+
+#endpoint Consultar por id
+@app.get('/usuario/{id}', tags=['Operaciones CRUD'])
+def ConsultaUno(id:int):
+    db= Session()
+    try:
+        consulta= db.query(User).filter(User.id == id).first()
+        if not consulta:
+            return JSONResponse(status_code=404, content={"Mensaje":"Usuario no encontrado"})
+        
+        return JSONResponse(content=jsonable_encoder(consulta))
+    except Excepcion as x:
+        return JSONResponse(status_code=500, content={"mensaje": "No fue posible conectar" , "Excepcion": str(x)})
+    finally:
+        db.close()
 
 #endpoint Para agregar usuarios
 @app.post('/usuario/', response_model=modelUsuario, tags=['Operaciones CRUD'])
@@ -51,12 +69,12 @@ def AgregarUsuario(usuarionuevo: modelUsuario):
         return JSONResponse(status_code=201, content={"mensaje": "Usuario Guardado", "usuario": usuarionuevo.model_dump()})
     except:
         db.rollback()
-        return JSONResponse(status_code=599, content={"mensaje": "No se Guardo" , "Excepcion": str(e)})
+        return JSONResponse(status_code=500, content={"mensaje": "No se Guardo" , "Excepcion": str(e)})
     finally:
         db.close()
     
 
-#endpoint Para modificar usuarios
+""" #endpoint Para modificar usuarios
 @app.put('/usuario/{id}', response_model=modelUsuario, tags=['Operaciones CRUD'])
 def Actualizar(id: int, usuarioActualizado:modelUsuario):
     for index, usr in enumerate(usuarios):
@@ -73,4 +91,4 @@ def Eliminar(id: int):
         if usr["id"] == id:
             del usuarios[index]
             return {"mensaje": "Usuario eliminado correctamente"}
-    raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    raise HTTPException(status_code=404, detail="Usuario no encontrado") """
