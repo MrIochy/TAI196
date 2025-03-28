@@ -1,3 +1,6 @@
+URL del repositorio de github
+https://github.com/MrIochy/TAI196
+
 Para Iniciar el servidor
 cd FASTAPI/entornoAPI/Scripts/; .\activate; cd ..\..; uvicorn main:app --reload --port 5000
 
@@ -6,3 +9,4 @@ py -m venv "nombre del entorno"
 En la carpeta de Scripts usaremos el archivo activate
 .\activate
 pip install fastapi uvicorn
+
